@@ -1,36 +1,76 @@
-# IBM Cloud Foundry - V2Ray
+# Python CLI and GUI Music Player
 
-Use GitHub Actions to automatically deploy the latest version of V2Ray to IBM Cloud Foundry
+## Description
 
-[Read the details in my blog (in Chinese) | 中文教程](https://p3terx.com/archives/how-to-use-ibm-cloud-gracefully-for-free.html)
+This project is a simple music player application built with Python. It supports playback of MP3 audio files and offers both a command-line interface (CLI) and a graphical user interface (GUI) built with Tkinter.
 
-## Usage
+## Features
 
-- Click the [Use this template](https://github.com/P3TERX/IBM-CF-V2/generate) button to create a new repository.
-- Click the `Settings` tab on your own repository, and then click the `Secrets` button to add the following encrypted environment variables:
+*   Plays MP3 audio files.
+*   Command-Line Interface (CLI) for playback control.
+*   Graphical User Interface (GUI) using Tkinter for a visual experience.
+*   Core playback controls:
+    *   Play
+    *   Pause
+    *   Resume (Unpause)
+    *   Stop
+*   Volume adjustment.
+*   Display of current song title and playback status.
+*   Dynamic GUI updates reflecting player state (e.g., Play/Pause button text, song information).
 
-  | Environment Variables | Description |
-  | --------------------- | ----------- |
-  | `IBM_CF_USERNAME`       | IBM Cloud user name (email address) |
-  | `IBM_CF_PASSWORD` | IBM Cloud password |
-  | `IBM_CF_ORG_NAME`(optional) | Organization name, the default is the email address. Can be found on [this page](https://cloud.ibm.com/account/cloud-foundry). |
-  | `IBM_CF_SPACE_NAME`(optional) | Space name, default is `dev`. Can be found on [this page](https://cloud.ibm.com/account/cloud-foundry). |
-  | `IBM_CF_APP_NAME` | App name, fill in according to your preference. |
-  | `V2_UUID` | Generate using UUID generator |
-  | `V2_WS_PATH_VMESS` </br> `V2_WS_PATH_VLESS` | Select one of the VMess and VLESS protocols, and fill in a combination of numbers and English letters. |
+## Requirements
 
-- Click the `Run workflow` button on the Actions page.
-- Wait for the deployment to complete.
-- Click the relevant application on the [Cloud Foundry Public](https://cloud.ibm.com/cloudfoundry/public) page to view the access address.
+*   Python 3.x
+*   Pygame library (`pygame`)
 
-> **TIPS:** You can customize the API address and App memory size through the workflow file.
+## Setup/Installation
 
-## Acknowledgments
+1.  Ensure you have Python 3 installed on your system.
+2.  Install the Pygame library using pip:
+    ```bash
+    pip install pygame
+    ```
 
-- [Project V](https://github.com/v2ray)
-- [IBM Cloud](https://cloud.ibm.com/)
-- [GitHub Actions](https://github.com/features/actions)
+## How to Run
 
-## Licence
+### CLI Version
 
-[MIT](https://github.com/P3TERX/IBM-CF-V2/blob/main/LICENSE) © P3TERX
+Navigate to the project directory in your terminal and run:
+
+```bash
+python music_player.py
+```
+
+**Available CLI Commands:**
+
+*   `play <filepath.mp3>`: Loads and plays the specified MP3 file.
+*   `play`: (If a song is loaded but stopped/paused) Resumes playback of the current track.
+*   `pause`: Pauses the currently playing music.
+*   `resume`: Resumes paused music.
+*   `stop`: Stops the music.
+*   `volume_up` or `vol_up`: Increases volume by 10%.
+*   `volume_down` or `vol_down`: Decreases volume by 10%.
+*   `set_volume <level>` or `vol <level>`: Sets volume to a specific level (0.0 to 1.0). Example: `set_volume 0.7`.
+*   `status`: Displays the current playback status, track, and volume.
+*   `quit` or `exit`: Exits the CLI player.
+
+### GUI Version
+
+Navigate to the project directory in your terminal and run:
+
+```bash
+python gui_player_app.py
+```
+
+This will launch the Tkinter-based graphical interface. Use the buttons to load and control music playback.
+
+## Project Structure
+
+*   `music_player.py`: Contains the core `Player` class (handling playback logic, state management) and the command-line interface (CLI).
+*   `gui_player_app.py`: Implements the Tkinter-based GUI application, utilizing the `Player` class from `music_player.py`.
+*   `test_music_player.py`: Contains unit tests for the `Player` class and CLI functionalities.
+*   `README.md`: This file, providing information about the project.
+
+## License
+
+No license provided.

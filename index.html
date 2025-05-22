@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="player-container">
+        <div id="song-info">Now Playing: ---</div>
+        
+        <div id="album-art-placeholder">
+            <!-- This div can be styled with CSS for a default look, 
+                 or an <img> tag can be dynamically added here by JavaScript -->
+        </div>
+        
+        <audio id="audio-player" controls></audio> <!-- 'controls' attribute is for initial debugging/testing -->
+
+        <div class="controls">
+            <button id="play-pause-button" aria-label="Play/Pause"><span class="icon">▶</span> Play</button> 
+            <button id="stop-button" aria-label="Stop"><span class="icon">■</span> Stop</button>
+            <!-- Note: Text alongside icons for clarity until icons are more prominent or universally understood -->
+        </div>
+
+        <div class="volume-control">
+            <label for="volume-slider">Volume:</label>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <div class="file-loader">
+            <label for="file-input">Load Song:</label>
+            <input type="file" id="file-input" accept="audio/*">
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <!-- Script for service worker registration will be added to app.js or directly here later -->
+</body>
+</html>

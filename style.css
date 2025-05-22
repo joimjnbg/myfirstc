@@ -1,0 +1,144 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f4f9; /* Light grey background */
+    color: #333; /* Default text color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.player-container {
+    background-color: #ffffff; /* White background for the player */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Max width for larger screens, full width on mobile */
+    text-align: center;
+}
+
+#song-info {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Handle long song titles */
+    color: #555;
+}
+
+#album-art-placeholder {
+    width: 80%;
+    max-width: 250px; /* Max size for the placeholder */
+    aspect-ratio: 1 / 1; /* Square */
+    background-color: #e0e0e0; /* Placeholder color */
+    margin: 0 auto 20px auto;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em; /* For a potential icon later */
+    color: #aaa;
+}
+/* Optional: Add a simple icon using pseudo-element if no image is loaded */
+#album-art-placeholder::before {
+    content: '🎵'; /* Music note icon */
+}
+
+#audio-player {
+    width: 100%;
+    margin-bottom: 20px;
+    /* Hide default controls if using custom ones, but keep for now for functionality */
+    /* display: none; */ 
+}
+
+.controls {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    align-items: center;
+    gap: 15px; /* Space between buttons */
+    margin-bottom: 20px;
+}
+
+.controls button {
+    background-color: #007bff; /* Primary button color (blue) */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Circular buttons */
+    width: 60px;
+    height: 60px;
+    font-size: 1.5em; /* Icon size */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.controls button .icon { /* Assuming icons are in a span */
+    /* display: block; */ /* If text is removed */
+}
+
+.controls button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+.controls button:active {
+    transform: scale(0.95);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.volume-control label {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.volume-control input[type="range"] {
+    flex-grow: 1; /* Slider takes available space */
+    max-width: 200px;
+    cursor: pointer;
+}
+
+.file-loader {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+}
+.file-loader label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+.file-loader input[type="file"] {
+    width: 100%;
+    font-size: 0.9em;
+}
+
+@media (max-width: 350px) {
+    .controls button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2em;
+    }
+    #song-info {
+        font-size: 1em;
+    }
+}

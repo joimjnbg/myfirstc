@@ -17,18 +17,20 @@ This project is a simple music player application built with Python. It supports
 *   Volume adjustment.
 *   Display of current song title and playback status.
 *   Dynamic GUI updates reflecting player state (e.g., Play/Pause button text, song information).
+*   Enhanced GUI styling using the 'arc' theme from `ttkthemes` (with fallback).
 
 ## Requirements
 
 *   Python 3.x
 *   Pygame library (`pygame`)
+*   ttkthemes library (`ttkthemes`) (for enhanced GUI styling)
 
 ## Setup/Installation
 
 1.  Ensure you have Python 3 installed on your system.
-2.  Install the Pygame library using pip:
+2.  Install the required Python libraries using pip:
     ```bash
-    pip install pygame
+    pip install pygame ttkthemes
     ```
 
 ## How to Run
@@ -62,7 +64,7 @@ Navigate to the project directory in your terminal and run:
 python gui_player_app.py
 ```
 
-This will launch the Tkinter-based graphical interface. Use the buttons to load and control music playback.
+This will launch the Tkinter-based graphical interface, which attempts to use the 'arc' theme from `ttkthemes` for an improved visual experience (or falls back to a default theme if 'arc' is unavailable). Use the buttons to load and control music playback.
 
 ## Project Structure
 

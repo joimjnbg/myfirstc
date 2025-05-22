@@ -14,23 +14,38 @@ class MusicPlayerApp:
         self.root.title("Music Player")
         self.is_closing = False # Flag to manage closing state for polling
 
-        # Apply a theme and basic styling
+        # Initialize ttk.Style. This will be used for custom styles or if themes are unavailable.
         self.style = ttk.Style(self.root)
-        try:
-            self.style.theme_use('clam') # 'clam', 'alt', 'default', 'classic'
-        except tk.TclError:
-            print("Warning: 'clam' theme not available, using default.")
-            # Default theme will be used
 
-        self.root.configure(bg='#f0f0f0') # Light grey background for the main window
-        self.root.minsize(380, 240) # Adjusted min height for better spacing
+        # If not using ThemedTk (i.e., in fallback), self.root.configure might be needed.
+        # However, the theme (arc or clam) should handle background.
+        # self.root.configure(bg='#f0f0f0') # Removed: Let theme handle background
 
-        # Style configurations
-        self.style.configure('TFrame', background='#f0f0f0')
-        self.style.configure('TButton', padding=5, font=('TkDefaultFont', 10))
-        self.style.configure('SongTitle.TLabel', font=("TkDefaultFont", 11, "bold"), background='#f0f0f0', padding=(5, 5, 5, 10))
-        self.style.configure('TLabel', background='#f0f0f0', font=('TkDefaultFont', 10))
+        self.root.minsize(380, 240) 
+
+        # Style configurations - these will apply on top of the theme or if no theme is active.
+        # Prioritize letting the theme define the look. Customizations should be minimal.
+
+        # For TButton, let's rely on the theme's default first.
+        # If needed, we can add specific styling like padding or font later.
+        # self.style.configure('TButton', padding=5, font=('TkDefaultFont', 10)) # Commented out to test theme's default
+
+        # SongTitle.TLabel: Font and padding are good for emphasis. Ensure no background for theme transparency.
+        self.style.configure('SongTitle.TLabel', font=("TkDefaultFont", 11, "bold"), padding=(5, 5, 5, 10))
         
+        # TLabel: Basic font styling. Ensure no background.
+        self.style.configure('TLabel', font=('TkDefaultFont', 10))
+        
+        # TScale: Attempt to style if the theme's default is not distinct enough.
+        # These values are examples; they might need adjustment or removal if 'arc' styles it well.
+        self.style.configure('Horizontal.TScale', 
+                             # background='#d3d3d3', # Theme should handle background
+                             # troughcolor='#c0c0c0', # Theme should handle trough
+                             sliderrelief='flat', 
+                             borderwidth=0)
+        # Note: If 'arc' theme styles TScale well, the above 'Horizontal.TScale' config might be removed or simplified.
+        # For now, keeping sliderrelief and borderwidth as they are less likely to clash with color schemes.
+
         # Initialize the Player backend
         try:
             self.player = Player()
@@ -52,20 +67,20 @@ class MusicPlayerApp:
 
         # --- Song Display Area ---
         self.song_label = ttk.Label(main_frame, text="No song loaded.", anchor=tk.W, style='SongTitle.TLabel')
-        self.song_label.pack(fill=tk.X, pady=(0, 10)) # Extra padding below title
+        self.song_label.pack(fill=tk.X, pady=10) # Consistent padding above and below
 
         # --- Control Buttons Frame ---
         self.controls_frame = ttk.Frame(main_frame, style='TFrame')
         self.controls_frame.pack(pady=10)
 
-        self.load_button = ttk.Button(self.controls_frame, text="Load Song", command=self._load_song_ui, style='TButton')
+        self.load_button = ttk.Button(self.controls_frame, text="📂 Load Song", command=self._load_song_ui, style='TButton')
         self.load_button.pack(side=tk.LEFT, padx=5)
 
         # Consolidated Play/Pause Button
-        self.play_pause_button = ttk.Button(self.controls_frame, text="Play", command=self._toggle_play_pause_ui, style='TButton')
+        self.play_pause_button = ttk.Button(self.controls_frame, text="▶ Play", command=self._toggle_play_pause_ui, style='TButton')
         self.play_pause_button.pack(side=tk.LEFT, padx=5)
 
-        self.stop_button = ttk.Button(self.controls_frame, text="Stop", command=self._stop_music_ui, style='TButton')
+        self.stop_button = ttk.Button(self.controls_frame, text="⏹ Stop", command=self._stop_music_ui, style='TButton')
         self.stop_button.pack(side=tk.LEFT, padx=5)
         
         # Initially disable Play/Pause and Stop buttons
@@ -147,13 +162,13 @@ class MusicPlayerApp:
     def _update_gui_for_playing(self):
         if not self.player: return
         self.song_label.config(text=f"Playing: {self.player.get_current_track_display_name()}")
-        self.play_pause_button.config(text="Pause", state=tk.NORMAL)
+        self.play_pause_button.config(text="⏸ Pause", state=tk.NORMAL)
         self.stop_button.config(state=tk.NORMAL)
 
     def _update_gui_for_paused(self):
         if not self.player: return
         self.song_label.config(text=f"Paused: {self.player.get_current_track_display_name()}")
-        self.play_pause_button.config(text="Play", state=tk.NORMAL)
+        self.play_pause_button.config(text="▶ Play", state=tk.NORMAL)
         # Stop button remains normal
 
     def _update_gui_for_stopped(self, song_ended_naturally=False):
@@ -171,7 +186,7 @@ class MusicPlayerApp:
         else: # Stopped by user, track remains
             self.song_label.config(text=f"Stopped: {current_track_name}")
 
-        self.play_pause_button.config(text="Play", state=tk.NORMAL if self.player.current_track else tk.DISABLED)
+        self.play_pause_button.config(text="▶ Play", state=tk.NORMAL if self.player.current_track else tk.DISABLED)
         # Stop button should be enabled if a track is loaded (even if stopped), disabled if no track ever loaded
         self.stop_button.config(state=tk.NORMAL if self.player.current_track else tk.DISABLED)
 
@@ -212,7 +227,28 @@ class MusicPlayerApp:
         self.root.destroy() 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    try:
+        from ttkthemes import ThemedTk
+        root = ThemedTk(theme="arc")
+        # root.set_theme_advanced("arc", True, True) # Optional: For themes supporting advanced settings
+        print("Using 'arc' theme from ttkthemes.")
+    except (ImportError, tk.TclError) as e:
+        print(f"Failed to use ttkthemes 'arc' (Error: {e}). Falling back to default ttk theme.")
+        # Ensure tk is imported if ThemedTk failed, though it should be at the top
+        if 'tk' not in globals():
+             import tkinter as tk # Should already be imported at the top
+        if 'ttk' not in globals():
+            from tkinter import ttk # Should already be imported at the top
+
+        root = tk.Tk()
+        style = ttk.Style(root)
+        try:
+            style.theme_use('clam') 
+            print("Using 'clam' ttk theme as fallback.")
+        except tk.TclError:
+            print("Fallback theme 'clam' also not available. Using system default ttk theme.")
+            # System default ttk theme will be used if 'clam' also fails
+
     app = MusicPlayerApp(root)
     # is_closing flag is set in app's __init__
     # _update_status is started in __init__ if player is available

@@ -134,6 +134,16 @@ class Player:
         else: # No music loaded or explicitly stopped
             return "Stopped"
 
+    def get_initial_volume(self):
+        """Returns the initial volume set by the player (0.0 to 1.0)."""
+        # This method assumes pygame.mixer.music has been initialized and volume set.
+        # Player.__init__ calls set_volume(0.5) via pygame.mixer.music.set_volume(0.5)
+        # So, we can return that initial value or fetch it if it might change before Kivy asks.
+        # For simplicity, if Player always init with 0.5:
+        # return 0.5
+        # Or, to be more robust if Player's init volume logic changes:
+        return pygame.mixer.music.get_volume()
+
 
 def run_cli():
     """Initializes Pygame and runs the command-line interface for the music player."""

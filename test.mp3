@@ -1,0 +1,5 @@
+This is a dummy MP3 file for testing. It is not a valid MP3.
+The player will likely report an error, which is fine for this stage of GUI integration.
+The actual content of this file doesn't matter for the GUI logic being tested,
+only that a file path can be passed to the player.
+When running, expect "Error playing music" from the Player class.

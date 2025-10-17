@@ -3,7 +3,6 @@ package com.example.autoswiper
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
-import android.graphics.Point
 import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
@@ -11,8 +10,11 @@ import kotlin.random.Random
 
 class AutoSwipeService : AccessibilityService() {
 
-    private val handler = Handler(Looper.getMainLooper())
+    private val swipeHandler = Handler(Looper.getMainLooper())
     private lateinit var swipeRunnable: Runnable
+
+    private val doubleClickHandler = Handler(Looper.getMainLooper())
+    private lateinit var doubleClickRunnable: Runnable
 
     companion object {
         var isRunning = false
@@ -20,10 +22,8 @@ class AutoSwipeService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        // Service is connected, but we don't start swiping immediately.
-        // isRunning is false by default.
-        // We start the runnable loop, but it will wait for isRunning to be true.
         startSwipingLoop()
+        startDoubleClickLoop()
     }
 
     private fun startSwipingLoop() {
@@ -32,68 +32,77 @@ class AutoSwipeService : AccessibilityService() {
                 if (isRunning) {
                     performSwipe()
                 }
-                // Always reschedule to check the isRunning flag again later.
-                val delay = if(isRunning) Random.nextLong(1000, 60000) else 500 // Check every 500ms if not running
-                handler.postDelayed(this, delay)
+                val delay = if(isRunning) Random.nextLong(1000, 60000) else 500
+                swipeHandler.postDelayed(this, delay)
             }
         }
-        handler.post(swipeRunnable)
+        swipeHandler.post(swipeRunnable)
+    }
+
+    private fun startDoubleClickLoop() {
+        doubleClickRunnable = object : Runnable {
+            override fun run() {
+                if (isRunning) {
+                    performDoubleClick()
+                }
+                val delay = if(isRunning) Random.nextLong(30000, 300000) else 500
+                doubleClickHandler.postDelayed(this, delay)
+            }
+        }
+        doubleClickHandler.post(doubleClickRunnable)
     }
 
     private fun performSwipe() {
         val displayMetrics = resources.displayMetrics
         val width = displayMetrics.widthPixels
         val height = displayMetrics.heightPixels
-
-        // Define margins (10% of screen dimensions)
         val marginX = (width * 0.1).toInt()
         val marginY = (height * 0.1).toInt()
-
         val path = Path()
-        val swipeUp = Random.nextInt(0, 10) >= 1 // 90% chance to swipe up
+        val swipeUp = Random.nextInt(0, 10) >= 1
 
         if (swipeUp) {
-            // SWIPE UP LOGIC (from bottom half)
             val startX = Random.nextInt(marginX, width - marginX)
             val startY = Random.nextInt(height / 2, height - marginY)
-            val endX = startX
-            val swipeDistance = Random.nextInt((height * 0.2).toInt(), (height * 0.3).toInt())
-            val endY = (startY - swipeDistance).coerceAtLeast(marginY)
-
+            val endY = (startY - Random.nextInt((height * 0.2).toInt(), (height * 0.3).toInt())).coerceAtLeast(marginY)
             path.moveTo(startX.toFloat(), startY.toFloat())
-            path.lineTo(endX.toFloat(), endY.toFloat())
+            path.lineTo(startX.toFloat(), endY.toFloat())
         } else {
-            // SWIPE DOWN LOGIC (from top half)
             val startX = Random.nextInt(marginX, width - marginX)
             val startY = Random.nextInt(marginY, height / 2)
-            val endX = startX
-            val swipeDistance = Random.nextInt((height * 0.2).toInt(), (height * 0.3).toInt())
-            val endY = (startY + swipeDistance).coerceAtMost(height - marginY)
-
+            val endY = (startY + Random.nextInt((height * 0.2).toInt(), (height * 0.3).toInt())).coerceAtMost(height - marginY)
             path.moveTo(startX.toFloat(), startY.toFloat())
-            path.lineTo(endX.toFloat(), endY.toFloat())
+            path.lineTo(startX.toFloat(), endY.toFloat())
         }
-
-        val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 200)) // 200ms duration
-            .build()
-
+        val gesture = GestureDescription.Builder().addStroke(GestureDescription.StrokeDescription(path, 0, 200)).build()
         dispatchGesture(gesture, null, null)
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Not needed for this functionality
+    private fun performDoubleClick() {
+        val displayMetrics = resources.displayMetrics
+        val width = displayMetrics.widthPixels
+        val height = displayMetrics.heightPixels
+
+        val clickX = Random.nextInt(width / 4, width * 3 / 4).toFloat()
+        val clickY = Random.nextInt(height / 4, height * 3 / 4).toFloat()
+
+        val path = Path().apply { moveTo(clickX, clickY) }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 50))
+            .addStroke(GestureDescription.StrokeDescription(path, 150, 50))
+            .build()
+        dispatchGesture(gesture, null, null)
     }
 
-    override fun onInterrupt() {
-        // Not needed for this functionality
-    }
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
-
+    override fun onInterrupt() {}
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(swipeRunnable)
+        swipeHandler.removeCallbacks(swipeRunnable)
+        doubleClickHandler.removeCallbacks(doubleClickRunnable)
         isRunning = false
     }
 }

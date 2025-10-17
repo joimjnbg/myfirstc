@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Auto Swiper</string>
+    <string name="accessibility_service_label">Auto Swiper Service</string>
+    <string name="accessibility_service_description">This service allows the app to perform swipes on the screen.</string>
+</resources>
